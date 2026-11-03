@@ -1,0 +1,6 @@
+{
+  "name": "email-shaker",
+  "private": true,
+  "type": "module",
+  "description": "Rewrites parent recruitment email templates into fresh versions and checks every fact against the original."
+}
