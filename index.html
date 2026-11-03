@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Email Shaker</title>
-<style>\n:root {{ padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }}\nbody {{ margin: 0; }}\n[hidden] {{ display: none !important; }}
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+
 /* Layout: two-panel workbench — ingredients on the left (with a sticky action bar), the fresh draft on the right; stacks on phones. */
 :root {
   --paper: #F2F4F7;
@@ -15,7 +20,6 @@
   --accent: #2346D6;
   --accent-ink: #FFFFFF;
   --accent-soft: #E4E9FC;
-  --fizz: #FFC93C;
   --ok: #1E7A4C;
   --ok-soft: #E2F3EA;
   --warn: #A85500;
@@ -26,7 +30,6 @@
   :root:not([data-theme="light"]) {
     --paper: #0E1319; --card: #161D25; --ink: #E7ECF1; --muted: #93A1AE; --line: #2A3542;
     --accent: #8098FF; --accent-ink: #0E1319; --accent-soft: #1E2847;
-    --fizz: #B8891A;
     --ok: #5CCB93; --ok-soft: #14301F; --warn: #F0A34A; --warn-soft: #34240F;
     color-scheme: dark;
   }
@@ -57,21 +60,6 @@ body {
   gap: 24px;
 }
 
-header { display: grid; gap: 6px; }
-h1 {
-  font-family: var(--font);
-  font-weight: 700;
-  font-size: clamp(30px, 5vw, 44px);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-  margin: 0;
-  text-wrap: balance;
-}
-h1 .fizz {
-  background: linear-gradient(transparent 60%, var(--fizz) 60%, var(--fizz) 90%, transparent 90%);
-  padding: 0 2px;
-}
-.lede { margin: 0; color: var(--muted); max-width: 66ch; }
 
 .bench {
   display: grid;
@@ -126,36 +114,34 @@ textarea { resize: vertical; }
 /* Template and draft share one letter style so they read the same */
 .letter-text { font-family: var(--font); font-size: 15px; line-height: 1.65; }
 #template { min-height: 280px; }
-input:focus-visible, textarea:focus-visible, button:focus-visible, .chip input:focus-visible + span {
+input:focus-visible, textarea:focus-visible, button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
 .insert-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.group { border: none; margin: 0; padding: 0; min-width: 0; display: grid; gap: 10px; }
+.group-title {
+  padding: 0;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+  font-weight: 700;
+}
+details.group summary { cursor: pointer; list-style-position: inside; }
+details.group summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details.group .count { font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; font-weight: 400; }
+details.group[open] summary { margin-bottom: 4px; }
+#openers { min-height: 200px; font-size: 14px; }
+.openers .insert-row { justify-content: space-between; }
+.openers .insert-row .hint { flex: 1 1 260px; }
 .insert-row .hint { margin-right: 2px; }
 
 .names { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 @media (max-width: 1000px) and (min-width: 861px) { .names { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 520px) { .names { grid-template-columns: 1fr; } }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { position: relative; }
-.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.chip span {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--paper);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background .15s, border-color .15s;
-}
-.chip span small { font-weight: 400; color: var(--muted); font-size: 12px; }
-.chip input:checked + span { background: var(--accent-soft); border-color: var(--accent); }
 
 /* Sticky action bar keeps "Shake it up" on screen however long the template is */
 .actionbar {
@@ -249,7 +235,6 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .check code { font-family: var(--font); font-size: 13px; overflow-wrap: anywhere; }
 .dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; flex: none; }
 
-.legend { font-size: 13px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 14px; margin: 0; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 @media (prefers-reduced-motion: reduce) {
@@ -267,32 +252,51 @@ button:disabled { opacity: .6; cursor: not-allowed; }
         <button class="btn-small" id="loadExample" type="button">Load example template</button>
       </div>
 
-      <div class="field">
-        <label for="template">Your template</label>
-        <div class="insert-row">
-          <span class="hint">Insert at cursor:</span>
-          <button class="btn-small" type="button" data-insert="[experimenter's name]">[experimenter's name]</button>
-          <button class="btn-small" type="button" data-insert="[parent's name]">[parent's name]</button>
-          <button class="btn-small" type="button" data-insert="[child's name]">[child's name]</button>
+      <fieldset class="group">
+        <legend class="group-title">Names</legend>
+        <div class="names">
+          <div class="field">
+            <label for="experimenterName">Experimenter's name</label>
+            <input type="text" id="experimenterName" placeholder="e.g. Sandra" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="parentName">Parent's name</label>
+            <input type="text" id="parentName" placeholder="e.g. Ms. Rivera" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="childName">Child's name</label>
+            <input type="text" id="childName" placeholder="e.g. Leo" autocomplete="off">
+          </div>
         </div>
-        <textarea id="template" class="letter-text" spellcheck="true"></textarea>
-        <p class="hint">Wrap wording that must not change (consent or IRB language) in <span class="tag">[[double brackets]]</span>. A first line starting with <span class="tag">Subject:</span> becomes the subject.</p>
-      </div>
+        <p class="hint">Type names here, not in the email. The template marks where each one goes.</p>
+      </fieldset>
 
-      <div class="names">
+      <fieldset class="group">
+        <legend class="group-title">Email template</legend>
         <div class="field">
-          <label for="experimenterName">Experimenter's name</label>
-          <input type="text" id="experimenterName" placeholder="e.g. Sandra" autocomplete="off">
+          <label for="template" class="sr">Email template</label>
+          <textarea id="template" class="letter-text" spellcheck="true"></textarea>
+          <div class="insert-row">
+            <span class="hint">Mark where names go:</span>
+            <button class="btn-small" type="button" data-insert="[experimenter's name]">[experimenter's name]</button>
+            <button class="btn-small" type="button" data-insert="[parent's name]">[parent's name]</button>
+            <button class="btn-small" type="button" data-insert="[child's name]">[child's name]</button>
+          </div>
+          <p class="hint">Wrap wording that must not change (consent or IRB language) in <span class="tag">[[double brackets]]</span>. A first line starting with <span class="tag">Subject:</span> becomes the subject.</p>
         </div>
+      </fieldset>
+
+      <details class="group openers" id="openerBox">
+        <summary class="group-title">Opener lines for Quick shuffle <span class="count" id="openerCount"></span></summary>
         <div class="field">
-          <label for="parentName">Parent's name</label>
-          <input type="text" id="parentName" placeholder="e.g. Ms. Rivera" autocomplete="off">
+          <label for="openers" class="sr">Opener lines, one per line</label>
+          <textarea id="openers" class="letter-text" spellcheck="true"></textarea>
+          <div class="insert-row">
+            <p class="hint">One opener per line. Quick shuffle picks one and puts it right after the greeting. <span class="tag">{weekday}</span> becomes today's day.</p>
+            <button class="btn-small" type="button" id="resetOpeners">Reset to defaults</button>
+          </div>
         </div>
-        <div class="field">
-          <label for="childName">Child's name</label>
-          <input type="text" id="childName" placeholder="e.g. Leo" autocomplete="off">
-        </div>
-      </div>
+      </details>
 
       <div class="actionbar">
         <div class="actions">
@@ -508,9 +512,48 @@ Language and Cognitive Development Lab, UC Berkeley`;
 
   // ---------- quick shuffle (no AI) ----------
   const pick = (a) => a[Math.floor(Math.random() * a.length)];
-  const GREETINGS = ["Hi {{parent}},", "Hello {{parent}},", "Dear {{parent}},", "Good morning, {{parent}},", "Hi there, {{parent}},"];
-  const OPENERS = ["I hope your week is going well!", "I hope this note finds you well.", "Thank you for taking a moment to read this.", "I hope you and your family are doing well.", ""];
-  const SIGNOFFS = ["Warmly,", "Best wishes,", "With thanks,", "All the best,", "Thank you,", "Kind regards,"];
+  const GREETINGS = ["Hi {{parent}},", "Hello {{parent}},", "Dear {{parent}},", "Good morning, {{parent}},", "Hi there, {{parent}},", "Hello again, {{parent}},"];
+  const DEFAULT_OPENERS = [
+    "I hope your week is going well!",
+    "I hope this note finds you well.",
+    "Thank you for taking a moment to read this.",
+    "I hope you and your family are doing well.",
+    "I hope your week is off to a good start!",
+    "I hope you're having a lovely day.",
+    "Happy {weekday}!",
+    "I hope the school year is treating your family well.",
+    "Thanks so much for opening this email.",
+    "I hope all is well with you and your family.",
+    "I hope this message finds you and [child's name] well.",
+    "I'll keep this short, since I know inboxes fill up fast!",
+    "I know parents get a lot of emails, so thank you for reading this one.",
+    "Hope you're having a good week so far!",
+    "I hope things are going smoothly at home.",
+    "I hope the week has been kind to you.",
+    "Wishing you a great week!",
+    "Just a quick note to share something your family might find interesting.",
+    "I'm reaching out with an invitation I hope you'll enjoy hearing about.",
+    "Thank you in advance for your time; I know how busy family life can be.",
+    "I hope you've been able to enjoy a little downtime lately.",
+    "We're always grateful when families take a moment to hear about our research.",
+  ];
+  const openersEl = $("openers"), openerCount = $("openerCount");
+  const OPENER_KEY = "email-shaker-openers";
+  try { openersEl.value = localStorage.getItem(OPENER_KEY) ?? DEFAULT_OPENERS.join("\n"); } catch { openersEl.value = DEFAULT_OPENERS.join("\n"); }
+  const openerList = () => openersEl.value.split("\n").map((l) => l.trim()).filter(Boolean);
+  const updateCount = () => { const n = openerList().length; openerCount.textContent = `(${n})`; };
+  openersEl.addEventListener("input", () => { try { localStorage.setItem(OPENER_KEY, openersEl.value); } catch {} updateCount(); });
+  $("resetOpeners").onclick = () => { openersEl.value = DEFAULT_OPENERS.join("\n"); try { localStorage.removeItem(OPENER_KEY); } catch {} updateCount(); };
+  updateCount();
+
+  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  let lastOpener = "", lastGreeting = "", lastSignoff = "";
+  // pick without repeating the previous choice when there's more than one option
+  function pickFresh(list, last) {
+    const pool = list.length > 1 ? list.filter((x) => x !== last) : list;
+    return pool[Math.floor(Math.random() * pool.length)] || "";
+  }
+  const SIGNOFFS = ["Warmly,", "Best wishes,", "With thanks,", "All the best,", "Thank you,", "Kind regards,", "Many thanks,", "Best,"];
   const greetRe = /^(dear|hi|hello|hey|good (morning|afternoon|evening))\b[^\n]*$/im;
   const signRe = /^(best( wishes| regards)?|warmly|warm regards|sincerely|thanks|thank you|regards|kind regards|cheers|all the best|with thanks|with gratitude)\s*,?\s*$/im;
 
@@ -518,12 +561,16 @@ Language and Cognitive Development Lab, UC Berkeley`;
     const t = readTemplate(); if (!t) return;
     let body = t.body;
     if (greetRe.test(body)) {
-      const opener = pick(OPENERS);
-      body = body.replace(greetRe, pick(GREETINGS) + (opener ? "\n\n" + opener : ""));
+      lastGreeting = pickFresh(GREETINGS, lastGreeting);
+      lastOpener = pickFresh(openerList(), lastOpener);
+      const opener = toInternal(lastOpener.replace(/\{weekday\}/gi, WEEKDAYS[new Date().getDay()]));
+      body = body.replace(greetRe, lastGreeting + (opener ? "\n\n" + opener : ""));
     }
-    if (signRe.test(body)) body = body.replace(signRe, pick(SIGNOFFS));
+    if (signRe.test(body)) { lastSignoff = pickFresh(SIGNOFFS, lastSignoff); body = body.replace(signRe, lastSignoff); }
     addDraft(t.subject, body, "Quick shuffle", t.raw);
-    setStatus("Shuffled the greeting, opener and sign-off. Everything else is word for word.");
+    setStatus(greetRe.test(t.body)
+      ? "Shuffled the greeting, opener and sign-off. Everything else is word for word."
+      : "No greeting line found (like \"Dear [parent's name],\"), so only the sign-off was shuffled.");
   };
 
   // ---------- Claude rewrite (via the /api/shake server function) ----------
