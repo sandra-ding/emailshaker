@@ -1,4 +1,4 @@
-# Email Shaker
+[README.md](https://github.com/user-attachments/files/34344170/README.md)# Email Shaker
 
 Paste a parent recruitment email template, add the experimenter's, parent's and child's names, and get a fresh version to copy into your email. Every link, email address, dollar amount, time, number and `[[locked]]` passage is checked against the original.
 
@@ -15,6 +15,8 @@ Paste a parent recruitment email template, add the experimenter's, parent's and 
 - Put names in as `[experimenter's name]`, `[parent's name]`, `[child's name]` (or use the Insert buttons).
 - Wrap wording that must not change, such as consent or IRB language, in `[[double brackets]]`.
 - Start the first line with `Subject:` to set the subject line.
+- Type the actual names in the **Names** boxes, not in the template.
+- Quick shuffle picks an opener line from **Opener lines for Quick shuffle**. Edit that list to add your own, one per line; `{weekday}` becomes today's day. Your list is saved in your browser.
 
 Real names never leave the browser. The server and Claude only see the bracketed placeholders.
 
